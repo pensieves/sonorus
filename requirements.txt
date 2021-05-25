@@ -1,0 +1,6 @@
+pyaudio~=0.2.11
+google-cloud-speech~=2.0.1
+torch~=1.7.1
+transformers~=4.4.3
+# pyflashlight
+fairseq~=1.0.0
