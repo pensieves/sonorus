@@ -12,12 +12,13 @@ FairseqLMState = namedtuple("FairseqLMState", ["prefix", "incremental_state", "p
 
 
 class FairseqLM(LM):
-    def __init__(self, word_dict, model):
+    def __init__(self, word_dict, model, model_device=torch.device("cpu")):
 
         LM.__init__(self)
 
         self.word_dict = word_dict
         self.model = model
+        self.model_device = model_device
         self.unk = self.word_dict.unk()
 
         self.save_incremental = False  # this currently does not work properly
@@ -33,7 +34,7 @@ class FairseqLM(LM):
 
         with torch.no_grad():
             res = self.model(
-                prefix.to(model.device), incremental_state=incremental_state
+                prefix.to(self.model_device), incremental_state=incremental_state
             )
             probs = self.model.get_normalized_probs(res, log_probs=True, sample=None)
 
@@ -81,14 +82,14 @@ class FairseqLM(LM):
             with torch.no_grad():
                 if new_incremental_state is not None:
                     new_incremental_state = apply_to_sample(
-                        lambda x: x.to(self.model.device), new_incremental_state
+                        lambda x: x.to(self.model_device), new_incremental_state
                     )
 
                 elif self.save_incremental:
                     new_incremental_state = {}
 
                 res = self.model(
-                    torch.from_numpy(curr_state.prefix).to(self.model.device),
+                    torch.from_numpy(curr_state.prefix).to(self.model_device),
                     incremental_state=new_incremental_state,
                 )
 

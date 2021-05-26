@@ -117,8 +117,8 @@ if args.decoder:
             decoder = W2lKenLMDecoder(**init_kwargs)
 
         else:
-            init_kwargs["gpu_idx"] = args.gpu_idx
-            # import pdb; pdb.set_trace()
+            # too slow on CPU, run W2lFairseqLMDecoder on GPU
+            init_kwargs["gpu_idx"] = 0
             decoder = W2lFairseqLMDecoder(**init_kwargs)
 
 stt.set_decoder(decoder).streaming_transcribe()
