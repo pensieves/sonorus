@@ -62,9 +62,8 @@ class W2lDecoder(object):
         r"""For supported set  of process strategy see the supported post process
         symbols in fairseq.data.data_utils.post_process"""
 
-        remove_tok_ids = (
+        symbol_idx_to_ignore = (
             self.token_dict.pad_index,
-            self.token_dict.unk_index,
             self.token_dict.bos_index,
             self.token_dict.eos_index,
         )
@@ -76,7 +75,10 @@ class W2lDecoder(object):
             for hypo in hypos[: min(len(hypos), self.nbest)]:
 
                 hyp_pieces = self.token_dict.string(
-                    (i for i in hypo["tokens"].int().cpu() if i not in remove_tok_ids)
+                    hypo["tokens"].int().cpu(),
+                    escape_unk=True,
+                    unk_string=self.token_dict.unk_index,
+                    extra_symbols_to_ignore=symbol_idx_to_ignore,
                 )
 
                 if "words" in hypo:
