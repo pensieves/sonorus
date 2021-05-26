@@ -230,7 +230,7 @@ def build_lm(
         build_binary(kenlm_bin_dir, filtered_path, binary_type, a_bits, q_bits)
 
 
-def generate_lm_from_inp_corpus(
+def generate_lm(
     inp_corpus_path,
     kenlm_bin_dir,
     top_k,
@@ -374,7 +374,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    generate_lm_from_inp_corpus(
+    generate_lm(
         args.input_txt,
         args.kenlm_bins,
         args.top_k,
