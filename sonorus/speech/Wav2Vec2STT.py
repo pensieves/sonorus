@@ -58,9 +58,8 @@ class Wav2Vec2STT(object):
         if self.decoder is not None:
             logits = logits.float().cpu().contiguous()
             decoded = self.decoder.decode(logits)
-            transcription = self.decoder.post_process(decoded)[0][
-                0
-            ]  # 1st sample, 1st best transcription
+            # 1st sample, 1st best transcription
+            transcription = self.decoder.post_process(decoded)[0][0]
 
         else:
             predicted_ids = torch.argmax(logits, dim=-1)

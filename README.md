@@ -12,7 +12,7 @@ To install `kenlm` with python bindings, refer to the `kenlm` [github repository
 
 To install `pyflashlight` with python bindings, refer to the [installation instructions](https://github.com/flashlight/flashlight/tree/master/bindings/python#installation). NOTE that the C++ build itself is not necessarily required for building python bindings. FURTHERMORE, `pyflashlight` will soon be made `pip`-installable via `pypi`.
 
-To install `fairseq`, refer to [requirements and installations](https://github.com/pytorch/fairseq) from the `fairseq` github repository. NOTE that the current `pip`-installable `pypi` module is of version < 1.0 and hence installation from source is currently rrequired. Once the `pypi` index is updated with the latest `fairseq` package, the same can be installed using `pip`.
+To install `fairseq`, refer to [requirements and installations](https://github.com/pytorch/fairseq) from the `fairseq` github repository. NOTE that the current `pip`-installable `pypi` module is of version < 1.0 and hence installation from source is currently required. Once the `pypi` index is updated with the latest `fairseq` package, the same can be installed using `pip`.
 
 `pyaudio` has a dependency on `portaudio`. If not using conda, make sure `portaudio` is installed. For example, for Ubuntu, the same can be installed by executing:
 

@@ -63,14 +63,14 @@ class W2lFairseqLMDecoder(W2lDecoder):
         model = task.build_model(lm_args.model)
         model.load_state_dict(checkpoint["model"], strict=False)
 
-        model = to_device(model, gpu_idx, for_eval=True)
+        model, device = to_device(model, gpu_idx, for_eval=True, return_device=True)
         model.make_generation_fast_()
 
         self.trie = Trie(self.vocab_size, self.silence)
 
         self.word_dict = task.dictionary
         self.unk_word = self.word_dict.unk()
-        self.lm = FairseqLM(self.word_dict, model)
+        self.lm = FairseqLM(self.word_dict, model, model_device=device)
 
         if self.lexicon:
 
