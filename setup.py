@@ -27,10 +27,11 @@ README = (curr_dir/"README.md").read_text()
 setup(name="sonorus",
     version="0.1.0",
     description=description,
-    long_descriptio=README,
+    long_description=README,
     author="Md Imbesat Hassan Rizvi",
     author_email="imbugene@gmail.com",
     url="https://github.com/pensieves/sonorus",
+    download_url="https://github.com/pensieves/sonorus/releases",
     packages=find_packages(exclude=["contrib", "docs", "examples", "tests"]), # Required
     install_requires=install_requires,
     extras_require=extras_require,
