@@ -13,7 +13,9 @@ curr_dir = Path(__file__).parent
 
 with open(curr_dir/"requirements.txt", "r") as f:
     # include all requirements which are not commented
-    install_requires = [i for i in f.read().splitlines() if i[0] != "#"]
+    reqs = [i for i in f.read().splitlines() if i.strip()]
+    install_requires = reqs[reqs.index("#required")+1:reqs.index("#speechlm")]
+    extras_require = {"speechlm": [x[1:] for x in reqs[reqs.index("#speechlm")+1:]]}
 
 description = r"""Named after a spell in the Harry Potter Universe, where it 
     amplies the sound of a speaker. In muggles' terminology, this is a repository 
@@ -31,6 +33,7 @@ setup(name="sonorus",
     url="https://github.com/pensieves/sonorus",
     packages=find_packages(exclude=["contrib", "docs", "examples", "tests"]), # Required
     install_requires=install_requires,
+    extras_require=extras_require,
     license="MIT",
     keywords=["deep learning", "speech recognition", "speech to text", "language modelling"],
     classifiers=[
