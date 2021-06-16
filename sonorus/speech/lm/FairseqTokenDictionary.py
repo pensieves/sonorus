@@ -23,8 +23,9 @@ class FairseqTokenDictionary(Dictionary):
                 assert s in indexed_symbols, assert_str.format(s)
 
             if isinstance(indexed_symbols, dict):
-                indexed_symbols = sorted(indexed_symbols.keys(), 
-                    key=lambda k: indexed_symbols[k])
+                indexed_symbols = sorted(
+                    indexed_symbols.keys(), key=lambda k: indexed_symbols[k]
+                )
 
         for s in indexed_symbols:
             self.add_symbol(s)
