@@ -93,7 +93,7 @@ decoder = None
 if args.decoder:
 
     token_dict = FairseqTokenDictionary(
-        symbols_int_map=stt.model_processor.tokenizer.get_vocab()
+        indexed_symbols=stt.model_processor.tokenizer.get_vocab()
     )
 
     if args.decoder == "viterbi":

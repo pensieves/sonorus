@@ -35,12 +35,12 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/google-cloud-credentials.json
 
 - Receives speech input from microphone and prints it on console using on-device Facebook's Wav2Vec2 model made available by Hugging Face..
 
-`python3 run/speech.py`
+`python3 examples/streaming-stt.py`
 
 To modify the execution parameters of the on-device model such as providing GPU device index in case of availability, the program can be run as:
 
-`python3 run/speech.py --gpu_idx 0`
+`python3 examples/streaming-stt.py --gpu_idx 0`
 
 - For using Google cloud's speech to text execute:
 
-`python3 run/google-speech.py`
+`python3 examples/google-streaming-stt.py`
