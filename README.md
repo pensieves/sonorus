@@ -16,7 +16,7 @@ To install `fairseq`, refer to [requirements and installations](https://github.c
 
 `pyaudio` has a dependency on `portaudio`. If not using conda, make sure `portaudio` is installed. For example, for Ubuntu, the same can be installed by executing:
 
-`sudo apt install portaudio19-dev`
+`sudo apt install portaudio19-dev` or `conda install pyaudio` in case of working in a conda environment which will install `pyaudio` along with `portaudio`.
 
 Finally, install requirements by executing:
 
