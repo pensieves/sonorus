@@ -24,6 +24,10 @@ Finally, install requirements by executing:
 
 or install using conda in a conda environment.
 
+*Finally, install the package using:*
+
+`pip install sonorus`
+
 ### Environment set up:
 
 *Note:* Environment set up is required while using Google Cloud's speech to text api. For this, Google Application Credentials is to be set as an environment variable by exporting e.g.: 

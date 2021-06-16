@@ -34,9 +34,7 @@ setup(
     author_email="imbugene@gmail.com",
     url="https://github.com/pensieves/sonorus",
     download_url="https://github.com/pensieves/sonorus/releases",
-    packages=find_packages(
-        exclude=["contrib", "docs", "tests"]
-    ),  # Required
+    packages=find_packages(exclude=["contrib", "docs", "tests"]),  # Required
     install_requires=install_requires,
     extras_require=extras_require,
     license="MIT",
