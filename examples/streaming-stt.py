@@ -1,11 +1,10 @@
-import argparse
-
 import sys
 from pathlib import Path
 
 path = str(Path(__file__).parents[1].resolve())
 sys.path.append(path)
 
+import argparse
 from sonorus.speech import Wav2Vec2STT
 from sonorus.speech.lm import (
     FairseqTokenDictionary,
