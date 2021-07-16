@@ -56,8 +56,15 @@ def audio_float2int(data, float_type=None, int_type=np.int16):
         data = np.frombuffer(data, dtype=float_type)
 
     int_info = np.iinfo(int_type)
-    abs_max = 2 ** (int_info.bits - 1)
-    data = (data * abs_max).clip(int_info.min, int_info.max).astype(int_type)
+    abs_max_int = 2 ** (int_info.bits - 1)
+
+    abs_max_float = max(abs(data.min()), abs(data.max()))
+
+    # normalize if required
+    if abs_max_float != 1:
+        data /= abs_max_float
+
+    data = (data * abs_max_int).clip(int_info.min, int_info.max).astype(int_type)
 
     if float_type is not None:
         data = data.tobytes()
@@ -102,6 +109,7 @@ def vad_collector(
     sample_rate=16000,
     num_padding_frames=20,
     act_inact_ratio=0.9,
+    yield_accumulated=True,
     frame_dtype_conv_fn=lambda frame, float_type, int_type: frame,
 ):
     r"""VAD based generator that yields voiced audio frames followed by a None 
@@ -124,19 +132,31 @@ def vad_collector(
 
             if num_voiced > (act_inact_ratio * ring_buff.maxlen):
                 triggered = True
-                voiced_frames.extend((f for f, s in ring_buff))
+
+                if yield_accumulated:
+                    voiced_frames.extend((f for f, s in ring_buff))
+                else:
+                    for f, s in ring_buff:
+                        yield f
+
                 ring_buff.clear()
 
         else:
-            voiced_frames.append(frame)
+
+            if yield_accumulated:
+                voiced_frames.append(frame)
+            else:
+                yield frame
+
             ring_buff.append((frame, is_speech))
             num_unvoiced = len([f for f, speech in ring_buff if not speech])
 
             if num_unvoiced > (act_inact_ratio * ring_buff.maxlen):
                 triggered = False
 
-                # yield entire voiced frames
-                yield b"".join(voiced_frames)
+                if yield_accumulated:
+                    # yield entire voiced frames
+                    yield b"".join(voiced_frames)
 
                 # yield None to mark a break in consecutive but separate voiced
                 # frames so that speech processor can start transcribing the
