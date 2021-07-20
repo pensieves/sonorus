@@ -2,8 +2,8 @@ from .SingleProcessor import SingleProcessor
 from .MultiProcessor import MultiProcessor
 import multiprocessing as mp
 
-class MultiProducerSingleConsumer(object):
 
+class MultiProducerSingleConsumer(object):
     def __init__(
         self,
         producer_target_func,
@@ -13,7 +13,7 @@ class MultiProducerSingleConsumer(object):
         store_out=False,
         callback=None,
         processing_size=None,
-        num_proc=max(mp.cpu_count(),2), # minimum 2 processes
+        num_proc=max(mp.cpu_count(), 2),  # minimum 2 processes
     ):
         r"""Input --> Producer --> Consumer --> Output"""
 
