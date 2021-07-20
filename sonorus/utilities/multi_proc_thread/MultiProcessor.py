@@ -11,7 +11,7 @@ class MultiProcessor(Processor):
         store_out=False,
         callback=None,
         processing_size=None,
-        num_proc=max(mp.cpu_count(),2), # minimum 2 processes
+        num_proc=max(mp.cpu_count(), 2),  # minimum 2 processes
     ):
 
         super(MultiProcessor, self).__init__(

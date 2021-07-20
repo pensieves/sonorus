@@ -3,7 +3,7 @@ from kaldi.nnet3 import NnetSimpleComputationOptions
 from kaldi.asr import NnetLatticeFasterRecognizer
 from kaldi.alignment import NnetAligner
 from kaldi.fstext import SymbolTable
-from kaldi.util.table import SequentialMatrixReader
+from kaldi.util.table import SequentialMatrixReader, SequentialWaveReader
 
 import soundfile as sf
 from tempfile import gettempdir
@@ -14,6 +14,8 @@ import re
 
 from ...utilities.utils import create_random_dir
 from ...audio.utils import audio_float2int
+
+ROUND_DECIMAL = 6
 
 
 def simplify_phoneme(phoneme):
@@ -39,7 +41,7 @@ class PhonemeSegmenter(object):
             acoustic_scale=1.0, frame_subsampling_factor=3, frames_per_chunk=150
         ),
         simplify_phoneme=simplify_phoneme,  # set to None if not desired
-        as_dict=True,  # return phonemes info as dict or tuple
+        as_dict=True,  # return phonemes info as dict if True else as tuple
         pos2key=(
             "name",
             "start",
@@ -87,7 +89,7 @@ class PhonemeSegmenter(object):
 
         self.work_dir = work_dir if work_dir else gettempdir()
 
-    def segment(self, audio, sample_rate=22050, clean_up=True):
+    def segment(self, audio, sample_rate=22050, time_level=True, clean_up=True):
 
         temp_dir = create_random_dir(work_dir=self.work_dir)
         audio_file = temp_dir / "audio.wav"
@@ -105,19 +107,33 @@ class PhonemeSegmenter(object):
         with open(spk2utt, "w") as f:
             f.write("utt1 utt1")
 
-        segmented_phoneme = self.segment_from_file(wav_scp, spk2utt)
+        segmented_phoneme = self.segment_from_file(
+            wav_scp, spk2utt, time_level=time_level
+        )
 
         if clean_up:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
         return segmented_phoneme
 
-    def segment_from_file(self, wav_scp, spk2utt):
-        return self.phoneme_from_rspecs(*self.get_rspecs(wav_scp, spk2utt))
+    def segment_from_file(self, wav_scp, spk2utt, time_level=True):
 
-    def phoneme_from_rspecs(self, feats_rspec, ivectors_rspec):
+        audio_durs = dict()
+        if time_level:
+            with SequentialWaveReader(f"scp:{wav_scp}") as reader:
+                audio_durs = {
+                    key: round(wav.duration, ROUND_DECIMAL) for key, wav in reader
+                }
 
-        aligned_phonemes = dict()
+        phonemes = self.phoneme_from_rspecs(
+            *self.get_rspecs(wav_scp, spk2utt), audio_durs=audio_durs
+        )
+
+        return phonemes
+
+    def phoneme_from_rspecs(self, feats_rspec, ivectors_rspec, audio_durs={}):
+
+        phonemes = dict()
 
         with SequentialMatrixReader(feats_rspec) as f, SequentialMatrixReader(
             ivectors_rspec
@@ -127,15 +143,33 @@ class PhonemeSegmenter(object):
 
                 decoded = self.asr.decode((feats, ivectors))
 
-                phoneme_alignment = self.aligner.to_phone_alignment(
+                aligned_phonemes = self.aligner.to_phone_alignment(
                     decoded["alignment"], self.phoneme_table
                 )
 
-                phoneme_alignment = self.repack(self.simplify(phoneme_alignment))
-
-                aligned_phonemes[key] = dict(
-                    text=decoded["text"], phonemes=phoneme_alignment
+                aligned_phonemes = self.frame_to_sec(
+                    aligned_phonemes, audio_dur=audio_durs.get(key)
                 )
+
+                aligned_phonemes = self.repack(self.simplify(aligned_phonemes))
+
+                phonemes[key] = dict(text=decoded["text"], phonemes=aligned_phonemes)
+
+        return phonemes
+
+    def frame_to_sec(self, aligned_phonemes, audio_dur=None):
+
+        # aligned_phonemes are in the form of list of tuples
+        # (phoneme, start, duration)
+        total_frames = sum(aligned_phonemes[-1][1:])
+
+        def to_sec(frame, total_frames=total_frames, audio_dur=audio_dur):
+            return round(frame * audio_dur / total_frames, ROUND_DECIMAL)
+
+        if audio_dur is not None:
+            aligned_phonemes = [
+                (ph[0], to_sec(ph[1]), to_sec(ph[2])) for ph in aligned_phonemes
+            ]
 
         return aligned_phonemes
 
