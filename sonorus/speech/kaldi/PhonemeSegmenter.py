@@ -119,8 +119,10 @@ class PhonemeSegmenter(object):
     def segment_from_file(self, wav_scp, spk2utt, time_level=True):
 
         audio_durs = dict()
+
         if time_level:
             with SequentialWaveReader(f"scp:{wav_scp}") as reader:
+
                 audio_durs = {
                     key: round(wav.duration, ROUND_DECIMAL) for key, wav in reader
                 }
@@ -163,7 +165,7 @@ class PhonemeSegmenter(object):
         # (phoneme, start, duration)
         total_frames = sum(aligned_phonemes[-1][1:])
 
-        def to_sec(frame, total_frames=total_frames, audio_dur=audio_dur):
+        def to_sec(frame):
             return round(frame * audio_dur / total_frames, ROUND_DECIMAL)
 
         if audio_dur is not None:
