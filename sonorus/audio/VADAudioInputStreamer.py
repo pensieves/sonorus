@@ -21,7 +21,8 @@ class VADAudioInputStreamer(AudioInputStreamer):
         aggressiveness=3,
         padding_dur_ms=300,
         act_inact_ratio=0.9,
-        yield_accumulated=True,
+        accumulate=True,
+        accumulate_count=float("inf"),
         sample_rate=SAMPLE_RATE,
         blocks_per_second=BLOCKS_PER_SECOND,
         pa_format=PA_FORMAT,
@@ -49,7 +50,8 @@ class VADAudioInputStreamer(AudioInputStreamer):
 
         self.vad = webrtcvad.Vad(aggressiveness)
         self.act_inact_ratio = act_inact_ratio
-        self.yield_accumulated = yield_accumulated
+        self.accumulate = accumulate
+        self.accumulate_count = accumulate_count
 
         frame_dur_ms = (self.processing_block_size * 1000) // self.processing_rate
         self.num_padding_frames = padding_dur_ms // frame_dur_ms
@@ -68,6 +70,7 @@ class VADAudioInputStreamer(AudioInputStreamer):
             sample_rate=self.processing_rate,
             num_padding_frames=self.num_padding_frames,
             act_inact_ratio=self.act_inact_ratio,
-            yield_accumulated=self.yield_accumulated,
+            accumulate=self.accumulate,
+            accumulate_count=self.accumulate_count,
             frame_dtype_conv_fn=self._dtype_conv_fn,
         )
