@@ -1,16 +1,16 @@
-from kaldi.decoder import LatticeFasterDecoderOptions
-from kaldi.nnet3 import NnetSimpleComputationOptions
-from kaldi.asr import NnetLatticeFasterRecognizer
-from kaldi.alignment import NnetAligner
-from kaldi.fstext import SymbolTable
-from kaldi.util.table import SequentialMatrixReader, SequentialWaveReader
-
 import soundfile as sf
 from tempfile import gettempdir
 from pathlib import Path
 import shutil
 import numpy as np
 import re
+
+from kaldi.decoder import LatticeFasterDecoderOptions
+from kaldi.nnet3 import NnetSimpleComputationOptions
+from kaldi.asr import NnetLatticeFasterRecognizer
+from kaldi.alignment import NnetAligner
+from kaldi.fstext import SymbolTable
+from kaldi.util.table import SequentialMatrixReader, SequentialWaveReader
 
 from ...utilities.utils import create_random_dir
 from ...audio.utils import audio_float2int
@@ -107,25 +107,26 @@ class PhonemeSegmenter(object):
         with open(spk2utt, "w") as f:
             f.write("utt1 utt1")
 
-        segmented_phoneme = self.segment_from_file(
-            wav_scp, spk2utt, time_level=time_level
-        )
+        phonemes = self.segment_from_file(wav_scp, spk2utt, time_level=time_level)
 
         if clean_up:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
-        return segmented_phoneme
+        return phonemes
 
     def segment_from_file(self, wav_scp, spk2utt, time_level=True):
 
         audio_durs = dict()
 
         if time_level:
-            with SequentialWaveReader(f"scp:{wav_scp}") as reader:
+            try:
+                with SequentialWaveReader(f"scp:{wav_scp}") as reader:
 
-                audio_durs = {
-                    key: round(wav.duration, ROUND_DECIMAL) for key, wav in reader
-                }
+                    audio_durs = {
+                        key: round(wav.duration, ROUND_DECIMAL) for key, wav in reader
+                    }
+            except:
+                pass
 
         phonemes = self.phoneme_from_rspecs(
             *self.get_rspecs(wav_scp, spk2utt), audio_durs=audio_durs
@@ -170,22 +171,22 @@ class PhonemeSegmenter(object):
 
         if audio_dur is not None:
             aligned_phonemes = [
-                (ph[0], to_sec(ph[1]), to_sec(ph[2])) for ph in aligned_phonemes
+                (i[0], to_sec(i[1]), to_sec(i[2])) for i in aligned_phonemes
             ]
 
         return aligned_phonemes
 
-    def simplify(self, phoneme_alignment):
+    def simplify(self, aligned_phonemes):
         if self.simplify_phoneme:
-            phoneme_alignment = [
-                (self.simplify_phoneme(i[0]), i[1], i[2]) for i in phoneme_alignment
+            aligned_phonemes = [
+                (self.simplify_phoneme(i[0]), i[1], i[2]) for i in aligned_phonemes
             ]
-        return phoneme_alignment
+        return aligned_phonemes
 
-    def repack(self, phoneme_alignment):
+    def repack(self, aligned_phonemes):
         if self.as_dict:
-            phoneme_alignment = [dict(zip(self.pos2key, i)) for i in phoneme_alignment]
-        return phoneme_alignment
+            aligned_phonemes = [dict(zip(self.pos2key, i)) for i in aligned_phonemes]
+        return aligned_phonemes
 
     def get_rspecs(self, wav_scp, spk2utt):
 

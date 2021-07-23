@@ -1,5 +1,5 @@
 # sonorus
-Named after a spell in the Harry Potter Universe, where it amplies the sound of a speaker. In muggles' terminology, this is a repository of modules for audio and speech processing for and on top of machine learning based tasks such as speech-to-text.
+Named after a spell in the Harry Potter Universe, where it amplifies the sound of a speaker. In muggles' terminology, this is a repository of modules for audio and speech processing for and on top of machine learning based tasks such as speech-to-text.
 
 ## Getting Started:
 

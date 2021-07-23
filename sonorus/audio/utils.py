@@ -109,7 +109,8 @@ def vad_collector(
     sample_rate=16000,
     num_padding_frames=20,
     act_inact_ratio=0.9,
-    yield_accumulated=True,
+    accumulate=True,
+    accumulate_count=float("inf"),
     frame_dtype_conv_fn=lambda frame, float_type, int_type: frame,
 ):
     r"""VAD based generator that yields voiced audio frames followed by a None 
@@ -133,8 +134,13 @@ def vad_collector(
             if num_voiced > (act_inact_ratio * ring_buff.maxlen):
                 triggered = True
 
-                if yield_accumulated:
+                if accumulate:
                     voiced_frames.extend((f for f, s in ring_buff))
+
+                    while len(voiced_frames) >= accumulate_count:
+                        yield b"".join(voiced_frames[:accumulate_count])
+                        voiced_frames = voiced_frames[accumulate_count:]
+
                 else:
                     for f, s in ring_buff:
                         yield f
@@ -143,8 +149,13 @@ def vad_collector(
 
         else:
 
-            if yield_accumulated:
+            if accumulate:
                 voiced_frames.append(frame)
+
+                while len(voiced_frames) >= accumulate_count:
+                    yield b"".join(voiced_frames[:accumulate_count])
+                    voiced_frames = voiced_frames[accumulate_count:]
+
             else:
                 yield frame
 
@@ -154,7 +165,7 @@ def vad_collector(
             if num_unvoiced > (act_inact_ratio * ring_buff.maxlen):
                 triggered = False
 
-                if yield_accumulated:
+                if accumulate:
                     # yield entire voiced frames
                     yield b"".join(voiced_frames)
 
