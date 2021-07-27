@@ -47,7 +47,7 @@ class PhonemeSegmenter(object):
             "start",
             "duration",
         ),  # keys to be used for dict while repacking
-        work_dir=None,  # temp directories will be used for intermediate steps
+        work_dir=gettempdir(),  # directory to be used for intermediate steps
     ):
 
         decoder_options = LatticeFasterDecoderOptions()
@@ -87,7 +87,7 @@ class PhonemeSegmenter(object):
         self.as_dict = as_dict
         self.pos2key = pos2key
 
-        self.work_dir = work_dir if work_dir else gettempdir()
+        self.work_dir = work_dir
 
     def segment(self, audio, sample_rate=22050, time_level=True, clean_up=True):
 
