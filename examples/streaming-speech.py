@@ -56,40 +56,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-
-kaldi_work_dir = (
-    "/home/harold/Documents/IISc-work/sonorus/examples/librispeech_tgsmall/"
-)
-kaldi_work_dir = Path(kaldi_work_dir)
-
-model_rxfilename = str(kaldi_work_dir / "exp/chain_cleaned/tdnn_1d_sp/final.mdl")
-graph_rxfilename = str(
-    kaldi_work_dir / "exp/chain_cleaned/tdnn_1d_sp/graph_tgsmall/HCLG.fst"
-)
-symbols_filename = str(
-    kaldi_work_dir / "exp/chain_cleaned/tdnn_1d_sp/graph_tgsmall/words.txt"
-)
-tree_rxfilename = str(kaldi_work_dir / "exp/chain_cleaned/tdnn_1d_sp/tree")
-
-lexicon_rxfilename = str(kaldi_work_dir / "data/lang_tgsmall/L.fst")
-disambig_rxfilename = str(kaldi_work_dir / "data/lang_tgsmall/phones/disambig.int")
-
-phoneme_file = str(kaldi_work_dir / "data/lang_tgsmall/phones.txt")
-
-mfcc_conf = create_mfcc_conf(kaldi_work_dir)  # with default params
-ivec_conf = create_ivector_extractor_conf(kaldi_work_dir)  # with default params
-
-phoneme_segmenter = PhonemeSegmenter(
-    model_rxfilename,
-    graph_rxfilename,
-    symbols_filename,
-    tree_rxfilename,
-    lexicon_rxfilename,
-    disambig_rxfilename,
-    phoneme_file,
-    mfcc_conf,
-    ivec_conf,
-)
+phoneme_segmenter = PhonemeSegmenter.from_url() # with default params
 
 audio_streamer = VADAudioInputStreamer(pa_format=pyaudio.paInt16,)
 

@@ -1,6 +1,6 @@
 import soundfile as sf
-from tempfile import gettempdir
 from pathlib import Path
+from tempfile import gettempdir
 import shutil
 import numpy as np
 import re
@@ -12,8 +12,12 @@ from kaldi.alignment import NnetAligner
 from kaldi.fstext import SymbolTable
 from kaldi.util.table import SequentialMatrixReader, SequentialWaveReader
 
-from ...utilities.utils import create_random_dir
-from ...audio.utils import audio_float2int
+from sonorus.utilities.utils import create_random_dir
+from sonorus.audio.utils import audio_float2int
+from sonorus import CACHE_DIR
+
+from .create_confs import create_mfcc_conf, create_ivector_extractor_conf
+from .utils import (download_model, LIBRISPEECH_TGSMALL_URL, MODEL_ITEM_FILENAMES)
 
 ROUND_DECIMAL = 6
 
@@ -89,9 +93,51 @@ class PhonemeSegmenter(object):
 
         self.work_dir = work_dir
 
+    @classmethod
+    def from_url(
+        cls, 
+        url=LIBRISPEECH_TGSMALL_URL,
+        model_item_filenames=MODEL_ITEM_FILENAMES,
+        cache_dir=CACHE_DIR,
+        force_download=False,
+        mfcc_conf_kwargs=dict(), # empty dict, defaults will be used
+        ivec_conf_kwargs=dict(), # empty dict, defaults will be used
+        decoder_opts=dict(beam=13, max_active=7000),
+        decodable_opts=dict(
+            acoustic_scale=1.0, frame_subsampling_factor=3, frames_per_chunk=150
+        ),
+    ):
+
+        model_dir, model_item_filepaths = download_model(
+            url, model_item_filenames, cache_dir, force_download
+        )
+
+        mfcc_conf = create_mfcc_conf(model_dir, **mfcc_conf_kwargs)
+        ivec_conf = create_ivector_extractor_conf(model_dir, **ivec_conf_kwargs)
+
+        args = [
+            str(model_item_filepaths[k]) 
+            for k in (
+                "model_rxfilename",
+                "graph_rxfilename",
+                "symbols_filename",
+                "tree_rxfilename",
+                "lexicon_rxfilename",
+                "disambig_rxfilename",
+                "phoneme_file",
+            )
+        ] + [mfcc_conf, ivec_conf]
+
+        return cls(
+            *args, decoder_opts=decoder_opts, decodable_opts=decodable_opts,
+        )
+
     def segment(self, audio, sample_rate=22050, time_level=True, clean_up=True):
 
-        temp_dir = create_random_dir(work_dir=self.work_dir)
+        temp_dir = create_random_dir(
+            work_dir=self.work_dir, prefix="sonorus_phoneme_segmenter"
+        )
+
         audio_file = temp_dir / "audio.wav"
         wav_scp = temp_dir / "wav.scp"
         spk2utt = temp_dir / "spk2utt"
