@@ -28,6 +28,13 @@ or install using conda in a conda environment.
 
 `pip install sonorus`
 
+### Kaldi model files:
+For phoneme segmentation, pykaldi is being used and will require kaldi-based model files. A librispeech_tgsmall model files are available to be downloaded from this [link](https://www.dropbox.com/s/eecyok5h1pfn7vy/librispeech_tgsmall.tar.gz?dl=1), which can be downloaded using the command:
+
+```
+wget -O librispeech_tgsmall.tar.gz https://www.dropbox.com/s/eecyok5h1pfn7vy/librispeech_tgsmall.tar.gz?dl=1
+```
+
 ### Environment set up:
 
 *Note:* Environment set up is required while using Google Cloud's speech to text api. For this, Google Application Credentials is to be set as an environment variable by exporting e.g.: 
