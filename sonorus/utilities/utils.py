@@ -3,7 +3,7 @@ import uuid
 import wget
 import tarfile, zipfile
 
-from sonorus import CACHE_DIR
+from .. import CACHE_DIR
 
 
 def create_random_dir(work_dir=CACHE_DIR, prefix="sonorus"):

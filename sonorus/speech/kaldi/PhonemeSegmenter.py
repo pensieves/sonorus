@@ -12,9 +12,9 @@ from kaldi.alignment import NnetAligner
 from kaldi.fstext import SymbolTable
 from kaldi.util.table import SequentialMatrixReader, SequentialWaveReader
 
-from sonorus.utilities.utils import create_random_dir
-from sonorus.audio.utils import audio_float2int
-from sonorus import CACHE_DIR
+from ...utilities.utils import create_random_dir
+from ...audio.utils import audio_float2int
+from ... import CACHE_DIR
 
 from .create_confs import create_mfcc_conf, create_ivector_extractor_conf
 from .utils import (

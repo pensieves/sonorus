@@ -3,8 +3,8 @@ from pathlib import Path
 import shutil
 from copy import deepcopy
 
-from sonorus import CACHE_DIR
-from sonorus.utilities.utils import download, unpack_archive
+from ... import CACHE_DIR
+from ...utilities.utils import download, unpack_archive
 
 LIBRISPEECH_TGSMALL_URL = (
     "https://www.dropbox.com/s/eecyok5h1pfn7vy/librispeech_tgsmall.tar.gz?dl=1"
