@@ -56,7 +56,9 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-phoneme_segmenter = PhonemeSegmenter.from_url() # with default params
+phoneme_segmenter = PhonemeSegmenter.from_url(
+    force_download=False
+)  # with default params
 
 audio_streamer = VADAudioInputStreamer(pa_format=pyaudio.paInt16,)
 
