@@ -1,5 +1,6 @@
 from pathlib import Path
 import uuid
+import wget
 import tarfile, zipfile
 
 from sonorus import CACHE_DIR
@@ -9,6 +10,24 @@ def create_random_dir(work_dir=CACHE_DIR, prefix="sonorus"):
     random_dir = Path(work_dir) / f"{prefix}_{uuid.uuid4().hex}"
     random_dir.mkdir(parents=True, exist_ok=True)
     return random_dir
+
+
+def download(url, download_dir, retry=5):
+
+    print(f"Downloading model from {url} ...")
+    for i in range(retry):
+
+        try:
+            print(f"Attempting download {i+1}/{retry} times ...")
+            filename = wget.download(url, out=str(download_dir))
+            print("Download completed")
+            break
+
+        except Exception as e:
+            if i < retry - 1:
+                print(f"Exception occured: {e}")
+
+    return filename
 
 
 def unpack_archive(filename, unpack_dir=None):
@@ -33,7 +52,7 @@ def unpack_archive(filename, unpack_dir=None):
             unpacked = [
                 (unpack_dir / fn).resolve()
                 for fn in getattr(f, names_method)()
-                if str(Path(fn).parent) == "." 
+                if str(Path(fn).parent) == "."
                 # i.e only top level directory and filenames
             ]
 

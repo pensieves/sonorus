@@ -17,7 +17,12 @@ from sonorus.audio.utils import audio_float2int
 from sonorus import CACHE_DIR
 
 from .create_confs import create_mfcc_conf, create_ivector_extractor_conf
-from .utils import (download_model, LIBRISPEECH_TGSMALL_URL, MODEL_ITEM_FILENAMES)
+from .utils import (
+    LIBRISPEECH_TGSMALL_URL,
+    MODEL_ITEM_FILENAMES,
+    download_model,
+    get_model_item_filepaths,
+)
 
 ROUND_DECIMAL = 6
 
@@ -94,29 +99,27 @@ class PhonemeSegmenter(object):
         self.work_dir = work_dir
 
     @classmethod
-    def from_url(
-        cls, 
-        url=LIBRISPEECH_TGSMALL_URL,
+    def from_dir(
+        cls,
+        model_dir,
         model_item_filenames=MODEL_ITEM_FILENAMES,
-        cache_dir=CACHE_DIR,
-        force_download=False,
-        mfcc_conf_kwargs=dict(), # empty dict, defaults will be used
-        ivec_conf_kwargs=dict(), # empty dict, defaults will be used
+        mfcc_conf_kwargs=dict(),  # empty dict, defaults will be used
+        ivec_conf_kwargs=dict(),  # empty dict, defaults will be used
         decoder_opts=dict(beam=13, max_active=7000),
         decodable_opts=dict(
             acoustic_scale=1.0, frame_subsampling_factor=3, frames_per_chunk=150
         ),
     ):
 
-        model_dir, model_item_filepaths = download_model(
-            url, model_item_filenames, cache_dir, force_download
+        model_item_filepaths = get_model_item_filepaths(
+            model_dir, model_item_filenames=model_item_filenames,
         )
 
         mfcc_conf = create_mfcc_conf(model_dir, **mfcc_conf_kwargs)
         ivec_conf = create_ivector_extractor_conf(model_dir, **ivec_conf_kwargs)
 
         args = [
-            str(model_item_filepaths[k]) 
+            str(model_item_filepaths.get(k))
             for k in (
                 "model_rxfilename",
                 "graph_rxfilename",
@@ -128,8 +131,30 @@ class PhonemeSegmenter(object):
             )
         ] + [mfcc_conf, ivec_conf]
 
-        return cls(
-            *args, decoder_opts=decoder_opts, decodable_opts=decodable_opts,
+        return cls(*args, decoder_opts=decoder_opts, decodable_opts=decodable_opts,)
+
+    @classmethod
+    def from_url(
+        cls,
+        url=LIBRISPEECH_TGSMALL_URL,
+        model_item_filenames=MODEL_ITEM_FILENAMES,
+        cache_dir=CACHE_DIR,
+        force_download=False,
+        mfcc_conf_kwargs=dict(),  # empty dict, defaults will be used
+        ivec_conf_kwargs=dict(),  # empty dict, defaults will be used
+        decoder_opts=dict(beam=13, max_active=7000),
+        decodable_opts=dict(
+            acoustic_scale=1.0, frame_subsampling_factor=3, frames_per_chunk=150
+        ),
+    ):
+
+        return cls.from_dir(
+            model_dir=download_model(url, cache_dir, force_download),
+            model_item_filenames=model_item_filenames,
+            mfcc_conf_kwargs=mfcc_conf_kwargs,
+            ivec_conf_kwargs=ivec_conf_kwargs,
+            decoder_opts=decoder_opts,
+            decodable_opts=decodable_opts,
         )
 
     def segment(self, audio, sample_rate=22050, time_level=True, clean_up=True):
