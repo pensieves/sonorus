@@ -6,7 +6,7 @@ Named after a spell in the Harry Potter Universe, where it amplifies the sound o
 ### Installation:
 *Install dependencies*
 
-The repository has dependencies such as `kenlm`, `pyflashlight`, `fairseq` and `portaudio` which needs to be installed before pip-installable modules
+The repository has dependencies such as `kenlm`, `pyflashlight`, `fairseq`, `portaudio` and `libsndfile1` which needs to be installed before pip-installable modules
 
 To install `kenlm` with python bindings, refer to the `kenlm` [github repository](https://github.com/kpu/kenlm).
 
@@ -14,9 +14,9 @@ To install `pyflashlight` with python bindings, refer to the [installation instr
 
 To install `fairseq`, refer to [requirements and installations](https://github.com/pytorch/fairseq) from the `fairseq` github repository. NOTE that the current `pip`-installable `pypi` module is of version < 1.0 and hence installation from source is currently required. Once the `pypi` index is updated with the latest `fairseq` package, the same can be installed using `pip`.
 
-`pyaudio` has a dependency on `portaudio`. If not using conda, make sure `portaudio` is installed. For example, for Ubuntu, the same can be installed by executing:
+`pyaudio` and `librosa`/`soundfile` have dependencies on `portaudio` and `libsndfile1`. If not using conda, make sure these are installed. For Ubuntu, the same can be installed by executing:
 
-`sudo apt install portaudio19-dev` or `conda install pyaudio` in case of working in a conda environment which will install `pyaudio` along with `portaudio`.
+`sudo apt install portaudio19-dev libsndfile1`
 
 Finally, install requirements by executing:
 
