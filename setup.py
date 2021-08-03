@@ -15,7 +15,12 @@ with open(curr_dir / "requirements.txt", "r") as f:
     # include all requirements which are not commented
     reqs = [i for i in f.read().splitlines() if i.strip()]
     install_requires = reqs[reqs.index("#required") + 1 : reqs.index("#speechlm")]
-    extras_require = {"speechlm": [x[1:] for x in reqs[reqs.index("#speechlm") + 1 :]]}
+    extras_require = {
+        "speechlm": [
+            x[1:] for x in reqs[reqs.index("#speechlm") + 1 : reqs.index("#kaldi")]
+        ],
+        "kaldi": [x[1:] for x in reqs[reqs.index("#kaldi") + 1 :]],
+    }
 
 description = r"""Named after a spell in the Harry Potter Universe, where it 
     amplies the sound of a speaker. In muggles' terminology, this is a repository 
@@ -26,7 +31,7 @@ README = (curr_dir / "README.md").read_text()
 
 setup(
     name="sonorus",
-    version="0.1.0",
+    version="0.1.1",
     description=description,
     long_description=README,
     long_description_content_type="text/markdown",
@@ -35,6 +40,8 @@ setup(
     url="https://github.com/pensieves/sonorus",
     download_url="https://github.com/pensieves/sonorus/releases",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),  # Required
+    package_data={"": ["**/*.txt", "**/*.conf"]},
+    include_package_data=True,
     install_requires=install_requires,
     extras_require=extras_require,
     license="MIT",
