@@ -31,7 +31,7 @@ README = (curr_dir / "README.md").read_text()
 
 setup(
     name="sonorus",
-    version="0.1.1",
+    version="0.1.2",
     description=description,
     long_description=README,
     long_description_content_type="text/markdown",
