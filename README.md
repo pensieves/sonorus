@@ -8,7 +8,11 @@ Named after a spell in the Harry Potter Universe, where it amplifies the sound o
 
 The repository has dependencies such as `kenlm`, `pyflashlight`, `fairseq`, `portaudio` and `libsndfile1` which needs to be installed before pip-installable modules
 
-To install `kenlm` with python bindings, refer to the `kenlm` [github repository](https://github.com/kpu/kenlm).
+To install `kenlm` with python bindings, refer to the `kenlm` [github repository](https://github.com/kpu/kenlm). To install, execute the command:
+
+```
+pip install https://github.com/kpu/kenlm/archive/master.zip
+```
 
 To install `pyflashlight` with python bindings, refer to the [installation instructions](https://github.com/flashlight/flashlight/tree/master/bindings/python#installation). NOTE that the C++ build itself is not necessarily required for building python bindings. FURTHERMORE, `pyflashlight` will soon be made `pip`-installable via `pypi`.
 
