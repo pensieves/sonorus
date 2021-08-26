@@ -31,7 +31,6 @@ class Wav2Vec2Featurizer(object):
         else:
             self.model_processor = model_processor
 
-
     def get_features(self, audio_inp, sampling_rate=16000):
 
         input_values = self.model_processor(
@@ -42,7 +41,6 @@ class Wav2Vec2Featurizer(object):
             features = self.model(input_values).last_hidden_state
 
         return features
-
 
     def streaming_featurize(
         self, sampling_rate=16000, callback=print, **callback_kwargs

@@ -82,6 +82,7 @@ class Wav2Vec2STT(object):
                         stream, 
                         audio_streamer.FMT2TYPE[audio_streamer.pa_format],
                     )
+
                     text = self.transcribe(audio_inp, sampling_rate=sampling_rate)
 
                     if text:
