@@ -79,8 +79,7 @@ class Wav2Vec2STT(object):
                 if stream is not None:
                     # audio_inp = np.frombuffer(stream, np.float32)
                     audio_inp = np.frombuffer(
-                        stream, 
-                        audio_streamer.FMT2TYPE[audio_streamer.pa_format],
+                        stream, audio_streamer.FMT2TYPE[audio_streamer.pa_format],
                     )
 
                     text = self.transcribe(audio_inp, sampling_rate=sampling_rate)
